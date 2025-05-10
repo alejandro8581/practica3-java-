@@ -47,10 +47,16 @@ public class Building {
         }
         //niggas be making the wildest methods
     }
-    public State getState(){
+    public String getState(){
         return this.state;
     }
     public Type getType(){
         return this.type;
+    }
+    public int getFloorsLength() { //creo estos 2 getters porque creo que me hace falta en player.knockdown
+        return floors.length;
+    }
+    public Position getFloor(int p){
+        return floors[p];
     }
 }

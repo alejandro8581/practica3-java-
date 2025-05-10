@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 public class Player {
     private String name;
     private Position[][] board;
@@ -8,9 +9,9 @@ public class Player {
             throw new Error("player without name");
         
         board = new Position[12][12];
-        for (int i=0;i<Position.length;i++){
-            for (int j=0;j<Position[i].length;j++){
-                Position[i][j] = new Position(i+1,j+1); //como el constructor inicializa EMPTY, empty it is. Y para que no haya 0,0; más YUNOOOU
+        for (int i=0;i<board.length;i++){
+            for (int j=0;j<board[i].length;j++){
+                board[i][j] = new Position(i+1,j+1); //como el constructor inicializa EMPTY, empty it is. Y para que no haya 0,0; más YUNOOOU
             }
         }
     }
@@ -71,7 +72,7 @@ public class Player {
          * ahora dice que solo puede ocupar de 1 a 4 posiciones, para ello debemos de restar el campo que varia
          */
         if (isHorizontal){
-            numPos = pFinal.getColumn()-pInicial.getColumn()+1; //no hace falta valor absoluto porque sabemos que Final es mayor o igual siempre
+            numPos = pFinal.getColumn()-pInicial.getColumn()+1; ( //no hace falta valor absoluto porque sabemos que Final es mayor o igual siempre
         }
         else
             numPos = pFinal.getRow()-pInicial.getRow()+1;
@@ -137,6 +138,88 @@ public class Player {
             }
         }
         return false;
+
+    }
+
+    public boolean knockDown(Position pos){
+        if (pos==null)
+            return false;
+        boolean isInside=false;
+        
+        for (int i=0;i<board.length;i++){
+            for (int j=0;j<board[i].length;j++){
+                if (pos==board[i][j])
+                    isInside=true;
+        }
+        }
+
+        if (!isInside)
+            throw new Error(pos.getRow(),pos.getColumn());
+        
+
+       //para poder jugar, el jugador debe tener todos sus edificios creados y ubicados, ergo, ninguna posicion de building es nula
+       if (buildings==null) //supongo que en este caso tampoco tiene creados edificios vaya
+            throw new UnderConstruction(this.name,"incomplete");
+       for (int i=0;i<buildings.length;i++){
+            if (buildings[i]==null)
+            throw new UnderConstruction(this.name,"incomplete");
+       } 
+
+
+       //ahora seguimos (en principio sin ninguna estructura de control de flujo) suponiendo que todo lo anterior ha ido ok
+
+       for (int i=0;i<buildings.length;i++){
+            for(int j=0;j<buildings[i].getFloorsLength();j++) //aqui como no tengo claro con lo que se refiere de comparar posiciones, voy a comparar todas creando 2 nuevos getters para tener las posiciones del edificio concreto
+            if (buildings[i].getFloor(j)==pos)
+                buildings[i].demolish(pos.getRow(),pos.getColumn()); //supongo que esto cambia el estado de alguna posicion, luego return true??
+                return true; //?????????  
+       }
+
+       //ahora comprobamos si TODOS los edificios tienen de estado demolished(es un string no deberia de haber complicaciones)
+       boolean allDemo=true;
+       for (int i=0;i<buildings.length;i++){
+            if (buildings[i].getState()!="demolished"){
+                allDemo=false;
+            }
+       }
+       if(allDemo)
+            throw new Spoiled(this.name);
+
+        //este metodo devuelve true si alguna posicion del tablero cambia de estado. NIGGA WHAT
+        return false;
+}
+
+    public void show(){
+        for (int i=0;i<board.length;i++){
+            for (int j=0;j<board[i].length;j++){
+                switch (board[i][j].getState()) {
+                    case EMPTY:
+                        System.out.print("e "); //como tiene que haber un espacio, lo pongo ahi. 
+                        break;
+                    case FULL:
+                        System.out.print("f ");
+                        break;
+                    case DAMAGED:
+                        System.out.print("d ");
+                    default:
+                        break;
+                }
+
+            }
+            System.out.println(); //esto deberia de imprimir un cambio de linea cada vez cambie i
+        }
+    }
+
+    public String getName(){
+        return this.name;
+    }
+    public ArrayList<Building> getBuildings(){
+        ArrayList<Building> buildingsList = new ArrayList<>();
+        for (int i=0;i<buildings.length;i++){
+            
+                buildingsList.add(buildings[i]);
+        }
+        return buildingsList;
 
     }
 }

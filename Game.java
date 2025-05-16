@@ -46,7 +46,7 @@ public class Game {
             while (lector.hasNextLine()) {
                 String linea = lector.nextLine();
                 if (linea.equals("<PLAYER>")) break;
-                String[] elems = linea.split(" ");
+                String[] elems = linea.split(" "); //split separa un string en arrays de strings con el parametro como punto de separacion
                 if (elems.length != 4) {
                     System.out.println("Error: bad format file");
                     lector.close();
@@ -124,7 +124,13 @@ public class Game {
                     int col = Integer.parseInt(elems[1]);
                     Position pos = new Position(row, col);
 
-                    Player actual = turnoP1 ? p1 : p2;
+                    Player actual;
+                    if (turnoP1) 
+                        actual = p1;
+                    else 
+                        actual = p2;
+
+
                     boolean resultado = actual.knockDown(pos);
 
                     System.out.println(actual.getName() + " " + row + " " + col + " " + resultado);

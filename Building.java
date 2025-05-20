@@ -11,15 +11,17 @@ public class Building {
         state = "intact";
         floors = new Position[nPlantas];  // Inicializar array
     }
-    public boolean setFloor(Position poser,int posDfloor) throws Error{
-        if (posDfloor >= 0 && posDfloor < floors.length && floors[posDfloor]==null){
-            floors[posDfloor]=poser;
-            poser.changeState(1); //cambia a FULL
+    public boolean setFloor(Position poser, int posDfloor) {
+        if (poser == null) {
+            return false; // No se puede asignar una posición nula
+        }
+        if (posDfloor >= 0 && posDfloor < floors.length && floors[posDfloor] == null) {
+            floors[posDfloor] = poser;
+            poser.changeState(1); // Cambia a FULL
             poser.setFloor(posDfloor);
             return true;
         }
-        else
-            return false;
+        return false;
     }
     public boolean demolish(int i, int j) throws Error {
         boolean todasColocadas = true; // asumo que todas están colocadas hasta que se demuestre lo contrario

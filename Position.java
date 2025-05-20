@@ -4,61 +4,55 @@ public class Position {
     private int floor;
     private State state;
 
-    public Position(int fila,int colusna){
-        state=State.EMPTY; 
-        floor=-1;
-        row=fila;
-        column=colusna;
+    public Position(int fila, int columna) {
+
+        this.row = fila;
+        this.column = columna;
+        this.floor = -1; // Valor por defecto
+        this.state = State.EMPTY; // Estado inicial
     }
-    public boolean changeState(int st) throws Error{
-        State[] estados = State.values(); //este array contiene todos los valores de State
+
+    public boolean changeState(int st) {
+        State[] estados = State.values(); // Array con todos los valores de State
         if (st < 0 || st >= estados.length) { // Validar si el estado es válido
-            throw new Error("invalid state: " + st);
-        }//COPILOT
-            if (st >= 0 && st < estados.length){ // st es un estado valido?
-                if (estados[st] != this.state){ //st es distinto del estado actual?
-                    this.state=estados[st]; //cambia el estadoa actual por st
-                    return true;
-                }
-                
-            }
-        
-        return false;
-    }
-    public boolean equals(Position poser) throws Error{
-        if (poser == null) { // Validar que poser no sea null
-            throw new Error("null position provided for comparison");
-        }//COPILOT
-        if (poser.getRow()==this.row && poser.getColumn()==this.column){
+            return false; // No se lanza excepción, simplemente devuelve false
+        }
+        if (estados[st] != this.state) { // Cambiar solo si el estado es diferente
+            this.state = estados[st];
             return true;
         }
-        else
-            return false;
-
+        return false;
     }
-   
 
-    public String toString() {
-        // Validar que las coordenadas sean válidas
-        if (this.row < 1 || this.column < 1) {
-            return "(invalid position)";
+    public boolean equals(Position poser) {
+        if (poser == null) {
+            return false; // No puede ser igual a null
         }
+        return this.row == poser.row && this.column == poser.column;
+    }
+
+    @Override
+    public String toString() {
         return "(" + this.row + "," + this.column + ")";
     }
-    public void setFloor(int nFloor){
-        this.floor=nFloor;
-    }
-    public State getState(){
+
+    public State getState() {
         return this.state;
     }
-    public  int getFloor(){
-        return this.floor;
-    }
-    public int getRow(){
+
+    public int getRow() {
         return this.row;
     }
-    public int getColumn(){
+
+    public int getColumn() {
         return this.column;
     }
 
+    public void setFloor(int nFloor) {
+        this.floor = nFloor;
+    }
+
+    public int getFloor() {
+        return this.floor;
+    }
 }

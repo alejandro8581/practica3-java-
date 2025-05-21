@@ -15,85 +15,49 @@ public class Building {
         if (poser == null) {
             return false; // No se puede asignar una posición nula
         }
+
         if (posDfloor >= 0 && posDfloor < floors.length && floors[posDfloor] == null) {
             floors[posDfloor] = poser;
             poser.changeState(1); // Cambia a FULL
             poser.setFloor(posDfloor);
             return true;
         }
+
         return false;
     }
-    public boolean demolish(int i, int j) throws Error {
-        boolean todasColocadas = true; // asumo que todas están colocadas hasta que se demuestre lo contrario
-        boolean existePos = false; // para verificar si existe la posición con los valores pasados
-        int posExistente = -1; // inicializo a un valor inválido para evitar problemas
-        boolean estadoCambiado = false; // para saber si se cambió el estado de alguna posición
-         // Validar si el array floors es nulo
-        if (floors == null) {
-            throw new Error("building not initialized"); // El edificio no está inicializado
-        }//COPILOT
-        // Validar si el array floors está vacío
-        if (floors.length == 0) {
-            throw new Error("building has no floors"); // El edificio no tiene plantas
-        }//COPILOT
-        // Validar si los índices están fuera de rango
-        if (i < 1 || i > 12 || j < 1 || j > 12) { // Suponiendo que las filas y columnas están en el rango 1-12
-            throw new Error("invalid position", i, j); // Posición inválida
-        }
-        // Verifico si todas las posiciones están colocadas y busco la posición que coincide
-        for (int k = 0; k < floors.length; k++) {
-            if (floors[k] == null) { // si cualquier posición es nula, no están todas colocadas
-                todasColocadas = false;
+    public boolean demolish(int r, int c) throws Error {
+        // Verificar si el edificio está en construcción
+        for (Position p : floors) {
+            if (p == null) {
+                throw new Error("building under construction");
             }
-            if (floors[k] != null) {
-                if (floors[k].getRow() == i && floors[k].getColumn() == j) {
-                    // si encuentro la posición con los valores pasados
-                    existePos = true;
-                    posExistente = k; // guardo el índice de la posición encontrada
-                }
-            }
-        } // cierre del for
-    
-        // Si no están todas colocadas, lanzo la excepción
-        if (!todasColocadas) {
-            throw new Error("building under construction"); // se lanza el error con el mensaje requerido
         }
-    
-        // Si la posición existe, verifico las condiciones para demoler
-        if (existePos) {
-            // Verifico si la posición no está dañada y las plantas inferiores están dañadas
-            if (floors[posExistente].getState() != State.DAMAGED) { 
-                boolean lowerFloorsDamaged = true; // asumo que todas las plantas inferiores están dañadas
-                for (int k = 0; k < posExistente; k++) { // recorro las plantas inferiores
-                    if (floors[k].getState() != State.DAMAGED) { 
-                        lowerFloorsDamaged = false; // si alguna no está dañada, cambio el estado
-                        break;
+
+        // Buscar la posición a demoler
+        for (int i = 0; i < floors.length; i++) {
+            Position p = floors[i];
+            if (p.getRow() == r && p.getColumn() == c && p.getState() != State.DAMAGED) {
+                // Verificar si todas las plantas inferiores están dañadas
+                for (int j = 0; j < i; j++) {
+                    if (floors[j].getState() != State.DAMAGED) {
+                        return false;
                     }
                 }
-    
-                if (lowerFloorsDamaged) { 
-                    // Si todas las plantas inferiores están dañadas, cambio el estado de la posición actual
-                    floors[posExistente].changeState(2); // cambio el estado a DAMAGED
-                    estadoCambiado = true; // marco que se cambió el estado
+                // Cambiar el estado de la posición actual a DAMAGED
+                p.changeState(2);
+
+                // Verificar si todas las posiciones están dañadas
+                for (Position q : floors) {
+                    if (q.getState() != State.DAMAGED) {
+                        return true;
+                    }
                 }
-            }
-    
-            // Verifico si todas las plantas están dañadas
-            boolean allDamaged = true; // asumo que todas están dañadas
-            for (Position floor : floors) { 
-                if (floor.getState() != State.DAMAGED) { 
-                    allDamaged = false; // si alguna no está dañada, cambio el estado
-                    break;
-                }
-            }
-    
-            // Si todas las plantas están dañadas, cambio el estado del edificio a "demolished"
-            if (allDamaged) { 
-                this.state = "demolished"; // cambio el estado del edificio
+                // Cambiar el estado del edificio a "demolished"
+                this.state = "demolished";
+                return true;
             }
         }
-    
-        return estadoCambiado; // devuelvo si se cambió el estado de alguna posición
+        return false;
     }
     
     public String getState(){

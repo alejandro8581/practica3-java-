@@ -5,15 +5,23 @@ public class Building {
     public Building(int nPlantas) {
         if (nPlantas < 1 || nPlantas > 4) {
             type = Type.SHACK;
+            nPlantas = 1; // Force SHACK to have 1 floor
         } else {
             type = Type.values()[nPlantas - 1];
         }
         state = "intact";
-        floors = new Position[nPlantas];  // Inicializar array
+        floors = new Position[nPlantas];
     }
     public boolean setFloor(Position poser, int posDfloor) {
         if (poser == null) {
             return false; // No se puede asignar una posición nula
+        }
+
+        // Verificar si la posición ya está asignada a otro piso
+        for (Position p : floors) {
+            if (p != null && p.equals(poser)) {
+                return false;
+            }
         }
 
         if (posDfloor >= 0 && posDfloor < floors.length && floors[posDfloor] == null) {
@@ -47,13 +55,18 @@ public class Building {
                 p.changeState(2);
 
                 // Verificar si todas las posiciones están dañadas
+                boolean allDamaged = true;
                 for (Position q : floors) {
                     if (q.getState() != State.DAMAGED) {
-                        return true;
+                        allDamaged = false;
+                        break;
                     }
                 }
-                // Cambiar el estado del edificio a "demolished"
-                this.state = "demolished";
+
+                // Cambiar el estado del edificio si todas las posiciones están dañadas
+                if (allDamaged) {
+                    this.state = "demolished";
+                }
                 return true;
             }
         }
